@@ -47,6 +47,9 @@ else use user-provided URL
 {{- define "cp-kafka-connect.kafka.bootstrapServers" -}}
 {{- if .Values.kafka.bootstrapServers -}}
 {{- .Values.kafka.bootstrapServers -}}
+{{- else if .Values.global.kafka.ssl.enabled -}}
+{{- $name := default "cp-kafka" .Values.kafka.nameOverride -}}
+{{- printf "SSL://%s-%s-0.%s:9092" .Release.Name $name (include "cp-kafka-connect.cp-kafka-headless.fullname" .) -}}
 {{- else -}}
 {{- printf "PLAINTEXT://%s:9092" (include "cp-kafka-connect.cp-kafka-headless.fullname" .) -}}
 {{- end -}}
@@ -77,5 +80,27 @@ Default GroupId to Release Name but allow it to be overridden
 {{- .Values.overrideGroupId -}}
 {{- else -}}
 {{- .Release.Name -}}
+{{- end -}}
+{{- end -}}
+
+{{/* 
+Support both global and chart local values for each keystore setting
+*/}}
+{{- define "cp-kafka.ssl.client.truststore" -}}
+{{ default .Values.ssl.client.truststoreFile .Values.global.kafka.ssl.client.truststoreFile }}
+{{- end -}}
+
+{{- define "cp-kafka.ssl.client.keystore" -}}
+{{ default .Values.ssl.client.keystoreFile .Values.global.kafka.ssl.client.keystoreFile }}
+{{- end -}}
+
+{{/*
+Create a secret name depending on if we're using shared SSL settings from a parent chart
+*/}}
+{{- define "cp-kafka.ssl.secretName" -}}
+{{- if .Values.global.kafka.ssl.enabled -}}
+{{ default (printf "%s-%s" .Release.Name "kafka-ssl-secret") .Values.global.kafka.ssl.secretName }}
+{{- else -}}
+{{ default (printf "%s-%s" (include "cp-kafka-connect.fullname" .) "ssl-secret") .Values.ssl.secretName }}
 {{- end -}}
 {{- end -}}
