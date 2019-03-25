@@ -8,7 +8,7 @@ Running ./certs.sh will generate a CA, broker certificates and truststores, as w
 
 You can then run client-certs.sh to generate additional client certificates signed by the trusted CA.
 
-Then, you can install the helm chart from your cloned repository (e.g. helm --upgrade install confluent . -f values.yaml).  Helm will create a secret containing your SSL certificates using .Files.Get to fetch and base64 encode the keystores specified in your values.yaml file.  
+Then, you can install the helm chart from your cloned repository (e.g. helm install . --name confluent --namespace cp-kafka -f values.yaml).  Helm will create a secret containing your SSL certificates using .Files.Get to fetch and base64 encode the keystores specified in your values.yaml file.  
 
 Alternativey, you can create your own secret by specifying kafka.global.ssl.secretName, and then running something like 'kubectl create secret generic {name} --from-file=kafka.client.truststore.jks --from-file=kafka.server.keystore.jks --from-literal=client.keystore.password=changeme...'
 

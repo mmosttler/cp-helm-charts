@@ -161,7 +161,7 @@ global:
       enabled: true
       client:
         auth: required
-        brokerPrincipal: CN=dev.kafka.idanalytics.com
+        brokerPrincipal: CN=dev.kafka.domain.com
         componentPrincipal: CN=internal
         truststoreFile: kafka.client.truststore.jks
         truststorePassword: test1234
