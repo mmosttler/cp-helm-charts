@@ -65,14 +65,18 @@ DNS.5 = $SCHEMA_CN
 DNS.6 = *.$SCHEMA_CN
 EOF
 
+echo "1. openssl req -new -x509 -keyout certs/schema-registry-ca-key -out certs/schema-registry-ca-cert -days $VALIDITY -passout pass:$CAPASS -subj '/CN=$SCHEMA_CN'"
 openssl req -new -x509 -keyout certs/schema-registry-ca-key -out certs/schema-registry-ca-cert -days $VALIDITY -passout pass:$CAPASS -subj "/CN=$SCHEMA_CN"
 
-
+echo "2. openssl req -new -newkey rsa:2048 -sha256 -keyout certs/schema-registry-cert-key -out certs/schema-registry-cert-req -config certs/schema-registry-extensions.cnf -passin pass:$KEYPASS -passout pass:$KEYPASS -subj '/CN=$SCHEMA_CN'"
 openssl req -new -newkey rsa:2048 -sha256 -keyout certs/schema-registry-cert-key -out certs/schema-registry-cert-req -config certs/schema-registry-extensions.cnf -passin pass:$KEYPASS -passout pass:$KEYPASS -subj "/CN=$SCHEMA_CN"
 
+echo "3. openssl x509 -req -in certs/schema-registry-cert-req -CA certs/schema-registry-ca-cert -CAkey certs/schema-registry-ca-key -CAcreateserial -out certs/schema-registry-signed-cert.pem -extensions v3_req -extfile certs/schema-registry-extensions.cnf -passin pass:$SCHEMA_CN"
 openssl x509 -req -in certs/schema-registry-cert-req -CA certs/schema-registry-ca-cert -CAkey certs/schema-registry-ca-key -CAcreateserial -out certs/schema-registry-signed-cert.pem -extensions v3_req -extfile certs/schema-registry-extensions.cnf -passin pass:$SCHEMA_CN
 
-openssl pkcs12 -export -name broker -in certs/schema-registry-signed-cert.pem -inkey certs/schema-registry-cert-key -out certs/schema-registry-keystore.p12 -passin pass:$KEYPASS -password pass:temp
+echo "4. openssl pkcs12 -export -name $SCHEMA_CN -in certs/schema-registry-signed-cert.pem -inkey certs/schema-registry-cert-key -out certs/schema-registry-keystore.p12 -passin pass:$KEYPASS -password pass:temp"
+openssl pkcs12 -export -name $SCHEMA_CN -in certs/schema-registry-signed-cert.pem -inkey certs/schema-registry-cert-key -out certs/schema-registry-keystore.p12 -passin pass:$KEYPASS -password pass:temp
 
 
+echo "5. keytool -keystore certs/schema.registry.keystore.jks -alias $SCHEMA_CN -importkeystore -srckeystore certs/schema-registry-keystore.p12 -srcstorepass temp -deststorepass $BROKERSTOREPASS -destkeypass $KEYPASS -noprompt"
 keytool -keystore certs/schema.registry.keystore.jks -alias $SCHEMA_CN -importkeystore -srckeystore certs/schema-registry-keystore.p12 -srcstorepass temp -deststorepass $BROKERSTOREPASS -destkeypass $KEYPASS -noprompt
