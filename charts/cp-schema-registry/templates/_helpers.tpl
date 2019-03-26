@@ -76,9 +76,11 @@ Create a secret name depending on if we're using shared SSL settings from a pare
 {{- default (printf "%s-%s" (include "cp-schema-registry.fullname" .) "ssl-secret") .Values.ssl.secretName -}}
 {{- end -}}
 {{- end -}} 
+
 {{- define "cp-kafka.ssl.client.truststore" -}}
 {{ default .Values.ssl.client.truststoreFile .Values.global.kafka.ssl.client.truststoreFile }}
 {{- end -}}
+
 {{- define "cp-kafka.ssl.client.keystore" -}}
 {{ default .Values.ssl.client.keystoreFile .Values.global.kafka.ssl.client.keystoreFile }}
 {{- end -}}

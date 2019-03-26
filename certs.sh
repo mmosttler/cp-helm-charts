@@ -43,3 +43,6 @@ openssl x509 -req -in certs/cert-req -CA certs/ca-cert -CAkey certs/ca-key -CAcr
 openssl pkcs12 -export -name broker -in certs/signed-cert.pem -inkey certs/cert-key -out certs/keystore.p12 -passin pass:$KEYPASS -password pass:temp
 keytool -keystore certs/kafka.server.keystore.jks -alias broker -importkeystore -srckeystore certs/keystore.p12 -srcstorepass temp -deststorepass $BROKERSTOREPASS -destkeypass $KEYPASS -noprompt
 keytool -keystore certs/kafka.server.keystore.jks -alias CARoot -import -file certs/ca-cert -storepass $BROKERSTOREPASS -noprompt
+
+
+keytool -keystore certs/schema.registry.keystore.jks -alias schema-registry.kafka-test.domain.com -importkeystore -srckeystore certs/keystore.p12 -srcstorepass temp -deststorepass $BROKERSTOREPASS -destkeypass $KEYPASS -noprompt
