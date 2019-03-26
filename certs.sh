@@ -68,7 +68,7 @@ EOF
 openssl req -new -x509 -keyout certs/schema-registry-ca-key -out certs/schema-registry-ca-cert -days $VALIDITY -passout pass:$CAPASS -subj "/CN=$SCHEMA_CN"
 
 
-openssl req -new -newkey rsa:2048 -sha256 -keyout certs/cert-key -out certs/cert-req -config certs/schema-registry-extensions.cnf -passin pass:$KEYPASS -passout pass:$KEYPASS -subj "/CN=$SCHEMA_CN"
+openssl req -new -newkey rsa:2048 -sha256 -keyout certs/schema-registry-cert-key -out certs/schema-registry-cert-req -config certs/schema-registry-extensions.cnf -passin pass:$KEYPASS -passout pass:$KEYPASS -subj "/CN=$SCHEMA_CN"
 
 openssl x509 -req -in certs/schema-registry-cert-req -CA certs/schema-registry-ca-cert -CAkey certs/schema-registry-ca-key -CAcreateserial -out certs/schema-registry-signed-cert.pem -extensions v3_req -extfile certs/schema-registry-extensions.cnf -passin pass:$SCHEMA_CN
 
